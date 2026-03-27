@@ -22,8 +22,18 @@ jobs:
             libncurses5-dev xz-utils tk-dev
           pip install buildozer cython virtualenv
 
+      - name: Accept Android licenses
+        run: |
+          mkdir -p $HOME/.android
+          touch $HOME/.android/repositories.cfg
+          yes | buildozer android debug 2>&1 | head -5 || true
+          yes | $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager \
+            --sdk_root=$HOME/.buildozer/android/platform/android-sdk \
+            --licenses || true
+
       - name: Build APK
-        run: buildozer android debug
+        run: |
+          yes | buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
